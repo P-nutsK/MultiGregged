@@ -1,0 +1,1 @@
+com.p_nsk.multigregged.MGDKubeJSPlugin
