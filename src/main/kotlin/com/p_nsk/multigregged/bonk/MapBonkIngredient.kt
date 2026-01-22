@@ -20,7 +20,6 @@ class MapBonkIngredient(
         "MapBonkIngredient{bonk=$ingredient}"
 
     companion object {
-        @JvmStatic
         fun convertToMapIngredient(
             ingredient: BonkIngredient
         ): List<AbstractMapIngredient> =

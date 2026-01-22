@@ -76,6 +76,27 @@ repositories {
         url = "https://maven.architectury.dev/"
     }
 
+    maven {
+        name = "Modmaven"
+        url = uri("https://modmaven.dev/")
+
+        content {
+            includeGroup("appeng")
+            includeGroup("mekanism")
+        }
+    }
+    // geckolib
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    // Ars Nouveau
+    maven {
+        url "https://maven.blamejared.com"
+    }
+    // Curios
+    maven {
+        name = "Illusive Soulworks maven"
+        url = "https://maven.theillusivec4.top/"
+    }
+
 }
 
 version = mod_version
@@ -109,6 +130,10 @@ legacyForge {
             client()
             sourceSet = sourceSets.main
             programArguments.addAll('--refresh-dependencies')
+            jvmArguments.addAll(
+                    "-XX:+AllowEnhancedClassRedefinition",
+                    "-XX:+UnlockExperimentalVMOptions"
+            )
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
         }
         server {
@@ -116,6 +141,10 @@ legacyForge {
             sourceSet = sourceSets.main
             systemProperty('forge.enabledGameTestNamespaces', project.mod_id)
             programArguments.addAll('--nogui', '--world', 'world-extra')
+            jvmArguments.addAll(
+                    "-XX:+AllowEnhancedClassRedefinition",
+                    "-XX:+UnlockExperimentalVMOptions"
+            )
         }
         data {
             data()
@@ -170,6 +199,27 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${architectury_version}"
     modImplementation "dev.latvian.mods:kubejs-forge:${kubejs_version}"
     modImplementation "dev.latvian.mods:rhino-forge:${rhino_version}"
+    modRuntimeOnly("curse.maven:probejs-585406:5227399")
+
+    // Mekanism
+//    modCompileOnly("mekanism:Mekanism:${minecraft_version}-${mekanism_version}:api")
+//    modImplementation("mekanism:Mekanism:${minecraft_version}-${mekanism_version}:all")
+//    modRuntimeOnly("mekanism:Mekanism:${mekanism_version}:additions")
+//    modRuntimeOnly("mekanism:Mekanism:${mekanism_version}:generators")
+//    modRuntimeOnly("mekanism:Mekanism:${mekanism_version}:tools")
+
+    // Ars Nouveau
+    modImplementation("com.hollingsworth.ars_nouveau:ars_nouveau-${minecraft_version}:${ars_version}")
+    modImplementation("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+    // Curios
+    // Compile against only the API artifact
+    modCompileOnly("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    // Use the full Curios API jar at runtime
+    modRuntimeOnly("top.theillusivec4.curios:curios-forge:${curios_version}")
+    // Ars EnergistiqueもといArs NouveauをCapability化するMod
+    modImplementation("curse.maven:ars-energistique-905641:5504444")
+    // applied energistics 2
+    modImplementation("appeng:appliedenergistics2-forge:${ae2_version}")
 
     // lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -200,8 +250,6 @@ tasks.named('processResources', ProcessResources).configure {
     filesMatching("META-INF/mods.toml") {
         expand properties + [project: project]
     }
-
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
 }
 

@@ -7,18 +7,17 @@ import com.gregtechceu.gtceu.api.machine.trait.ICapabilityTrait
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait
 import com.gregtechceu.gtceu.api.recipe.GTRecipe
 
-@Suppress("PropertyName")
 class NotifiableBonkHandler @JvmOverloads constructor(
     machine: MetaMachine,
-    val bonkCapacity:Int,
-    val _handlerIO: IO,
-    val _capabilityIO: IO = _handlerIO,
+    val bonkCapacity: Int,
+    private val handlerIO: IO,
+    private val capabilityIO: IO = handlerIO,
 ) : NotifiableRecipeHandlerTrait<BonkIngredient>(machine),
     ICapabilityTrait {
-    override fun getHandlerIO(): IO = _handlerIO
-    override fun getCapabilityIO(): IO = _capabilityIO
+    override fun getHandlerIO(): IO = handlerIO
+    override fun getCapabilityIO(): IO = capabilityIO
     var bonk = 0
-    fun addBonk(bonkToAdd:Int, simulate: Boolean): Boolean {
+    fun addBonk(bonkToAdd: Int, simulate: Boolean): Boolean {
         if (bonkToAdd < 0) return false
         if (bonkToAdd.toLong() + this.bonk.toLong() > this.bonkCapacity) return false
         if (simulate) return true
@@ -26,6 +25,7 @@ class NotifiableBonkHandler @JvmOverloads constructor(
         this.notifyListeners()
         return true
     }
+
     fun drainBonk(bonkToDrain: Int, simulate: Boolean): Boolean {
         if (bonkToDrain < 0) return false
         if (bonkToDrain > this.bonk) return false
@@ -34,16 +34,17 @@ class NotifiableBonkHandler @JvmOverloads constructor(
         this.notifyListeners()
         return true
     }
+
     override fun handleRecipeInner(
         io: IO,
         recipe: GTRecipe,
         left: MutableList<BonkIngredient>,
         simulate: Boolean
     ): List<BonkIngredient>? {
-        for(i in left.indices) {
+        for (i in left.indices) {
             val bonkIngredient = left[i]
-            if(bonk >= bonkIngredient.bonk) {
-                if(!simulate) {
+            if (bonk >= bonkIngredient.bonk) {
+                if (!simulate) {
                     bonk -= bonkIngredient.bonk
                 }
                 left.removeAt(i)

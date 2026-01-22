@@ -12,10 +12,12 @@ import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels.OVERLAY_ITEM_HATCH_INPUT
 import com.gregtechceu.gtceu.utils.FormattingUtil
+import com.p_nsk.multigregged.MGDMachineUtils.registerTieredMachines
 import com.p_nsk.multigregged.bonk.BonkHatchPartMachine
 import net.minecraft.network.chat.Component
 import java.util.function.BiFunction
 import com.p_nsk.multigregged.MultiGreggedMod.Companion.REGISTRATE
+import com.p_nsk.multigregged.ars.ArsMachines
 
 @Suppress("unused")
 object MGDMachines {
@@ -44,22 +46,11 @@ object MGDMachines {
         }, *GTMachineUtils.ALL_TIERS
     )
 
-    private fun registerTieredMachines(
-        name: String,
-        factory: BiFunction<IMachineBlockEntity, Int, MetaMachine?>,
-        builder: BiFunction<Int, MachineBuilder<MachineDefinition?>, MachineDefinition?>,
-        vararg tiers: Int
-    ): Array<MachineDefinition?> {
-        val definitions = arrayOfNulls<MachineDefinition>(GTValues.TIER_COUNT)
-        for (tier in tiers) {
-            val register =
-                REGISTRATE.machine(
-                    GTValues.VN[tier].lowercase() + "_" + name
-                ) { holder -> factory.apply(holder, tier) }.tier(tier)
-            definitions[tier] = builder.apply(tier, register)
-        }
-        return definitions
-    }
 
-    fun init() {}
+    fun init() {
+        // Ars IntegrationはArsEngが有効な場合にのみ
+        if(GTCEu.isModLoaded("arseng")) {
+            ArsMachines.init()
+        }
+    }
 }

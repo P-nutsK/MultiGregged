@@ -5,6 +5,7 @@ import com.gregtechceu.gtceu.api.addon.IGTAddon
 import com.gregtechceu.gtceu.api.addon.events.KJSRecipeKeyEvent
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.MapIngredientTypeManager
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate
+import com.p_nsk.multigregged.ars.MapSourceIngredient
 import com.p_nsk.multigregged.bonk.BonkIngredient
 import com.p_nsk.multigregged.bonk.MapBonkIngredient
 import net.minecraft.data.recipes.FinishedRecipe
@@ -19,8 +20,7 @@ class MGDGTAddon : IGTAddon {
 
     override fun initializeAddon() {
         MapIngredientTypeManager.registerMapIngredient(
-            BonkIngredient::class.java,
-            MapBonkIngredient::convertToMapIngredient
+            BonkIngredient::class.java, MapBonkIngredient::convertToMapIngredient
         )
     }
 

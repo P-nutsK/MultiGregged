@@ -18,7 +18,7 @@ data class BonkIngredient(val bonk: Int) {
         }
 
         object Serializer : IContentSerializer<BonkIngredient> {
-            // called by kubejsとか
+
             override fun of(o: Any?): BonkIngredient? = when (o) {
                 is Int -> BonkIngredient(o)
                 is BonkIngredient -> o

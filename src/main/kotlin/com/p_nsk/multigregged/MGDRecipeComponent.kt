@@ -19,11 +19,25 @@ object MGDRecipeComponent {
         true
     )
 
+    val SOURCE_IN = ContentJS(
+        NumberComponent.ANY_INT,
+        MGDRecipeCapabilities.SOURCE,
+        false
+    )
+    val SOURCE_OUT = ContentJS(
+        NumberComponent.ANY_INT,
+        MGDRecipeCapabilities.SOURCE,
+        true
+    )
+
     fun registerRecipeKeys(event: KJSRecipeKeyEvent) {
         event.registerKey(MGDRecipeCapabilities.BONK, Pair.of(BONK_IN, BONK_OUT))
+        event.registerKey(MGDRecipeCapabilities.SOURCE, Pair.of(SOURCE_IN, SOURCE_OUT))
     }
     fun registerRecipeComponents(event: RecipeComponentFactoryRegistryEvent) {
         event.register("mgdBonkIn", BONK_IN)
         event.register("mgdBonkOut", BONK_OUT)
+        event.register("mgdSourceIn", SOURCE_IN)
+        event.register("mgdSourceOut", SOURCE_OUT)
     }
 }
