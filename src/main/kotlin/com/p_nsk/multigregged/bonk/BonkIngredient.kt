@@ -3,6 +3,8 @@ package com.p_nsk.multigregged.bonk
 import com.gregtechceu.gtceu.api.recipe.content.IContentSerializer
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import com.p_nsk.multigregged.MultiGreggedMod
+import org.apache.commons.lang3.math.NumberUtils
 
 
 data class BonkIngredient(val bonk: Int) {
@@ -11,25 +13,31 @@ data class BonkIngredient(val bonk: Int) {
         val EMPTY = BonkIngredient(0);
 
         @JvmField
-        val CODEC: Codec<BonkIngredient> = RecordCodecBuilder.create { instance ->
-            instance.group(
-                Codec.INT.fieldOf("bonk").forGetter(BonkIngredient::bonk)
-            ).apply(instance, ::BonkIngredient)
-        }
+        val CODEC: Codec<BonkIngredient> = Codec.INT.xmap(
+            ::BonkIngredient, BonkIngredient::bonk
+        )
 
         object Serializer : IContentSerializer<BonkIngredient> {
 
-            override fun of(o: Any?): BonkIngredient? = when (o) {
-                is Int -> BonkIngredient(o)
-                is BonkIngredient -> o
-                else -> null
+            override fun of(o: Any?): BonkIngredient? {
+                return when (o) {
+                    is Int -> BonkIngredient(o)
+                    is Number -> BonkIngredient(o.toInt())
+                    is CharSequence -> {
+                        val intValue = NumberUtils.toInt(o.toString(), 0)
+                        BonkIngredient(intValue)
+                    }
+
+                    is BonkIngredient -> o
+                    else -> null
+                }
             }
 
-            override fun defaultValue(): BonkIngredient = EMPTY
+            override fun defaultValue() = EMPTY
 
-            override fun contentClass(): Class<BonkIngredient> = BonkIngredient::class.java
+            override fun contentClass() = BonkIngredient::class.java
 
-            override fun codec(): Codec<BonkIngredient> = CODEC
+            override fun codec() = CODEC
         }
     }
 

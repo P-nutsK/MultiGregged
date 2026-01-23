@@ -5,9 +5,9 @@ import com.p_nsk.multigregged.ars.SourceRecipeCapability
 import com.p_nsk.multigregged.bonk.BonkRecipeCapability
 
 object MGDRecipeCapabilities {
-    @JvmStatic
+    @JvmField
     val BONK = BonkRecipeCapability.CAP
-    @JvmStatic
+    @JvmField
     val SOURCE = SourceRecipeCapability.CAP
     fun init() {
         GTRegistries.RECIPE_CAPABILITIES.register(BONK.name, BONK)

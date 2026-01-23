@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.LazyOptional
+import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
 
 class SourceMachineBlockEntity(type: BlockEntityType<*>, pos: BlockPos, blockState: BlockState) :
     MetaMachineBlockEntity(type, pos, blockState), ITooltipProvider {
@@ -48,6 +49,7 @@ class SourceMachineBlockEntity(type: BlockEntityType<*>, pos: BlockPos, blockSta
     }
 
     override fun invalidateCaps() {
+        LOGGER.info("[SourceBE] invalidateCaps pos={} metaMachine={}", blockPos, metaMachine?.javaClass?.name)
         super.invalidateCaps()
         sourceCap.invalidate()
     }

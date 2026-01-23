@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine
 import com.gregtechceu.gtceu.api.machine.trait.ICapabilityTrait
 import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait
 import com.gregtechceu.gtceu.api.recipe.GTRecipe
+import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
 
 class NotifiableBonkHandler @JvmOverloads constructor(
     machine: MetaMachine,
@@ -41,6 +42,17 @@ class NotifiableBonkHandler @JvmOverloads constructor(
         left: MutableList<BonkIngredient>,
         simulate: Boolean
     ): List<BonkIngredient>? {
+        LOGGER.info(
+            "[BonkTrait] handleRecipeInner thread={} sim={} io={} recipe={} left={} stored={} capIO={} handlerIO={}",
+            Thread.currentThread().name,
+            simulate,
+            io,
+            recipe.id,
+            left.joinToString(prefix = "[", postfix = "]") { it.bonk.toString() },
+            bonk,
+            capabilityIO,
+            handlerIO
+        )
         for (i in left.indices) {
             val bonkIngredient = left[i]
             if (bonk >= bonkIngredient.bonk) {
@@ -55,11 +67,19 @@ class NotifiableBonkHandler @JvmOverloads constructor(
     }
 
     override fun getContents(): List<Any?> {
+        LOGGER.info(
+            "[BonkTrait] getContents thread={} io={} capIO={} stored={} machine={}",
+            Thread.currentThread().name,
+            handlerIO,
+            capabilityIO,
+            bonk,
+            machine.javaClass.simpleName
+        )
         return listOf(BonkIngredient(bonk))
     }
 
     override fun getTotalContentAmount(): Double {
-        return 1.0;
+        return bonk.toDouble()
     }
 
     override fun getCapability(): RecipeCapability<BonkIngredient> {

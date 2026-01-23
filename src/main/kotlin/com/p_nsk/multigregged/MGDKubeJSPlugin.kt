@@ -18,8 +18,8 @@ class MGDKubeJSPlugin : KubeJSPlugin() {
     }
 
     override fun registerBindings(event: BindingsEvent) {
-        event.add("MGDPartAbilities", MGDPartAbilities)
-        event.add("MGDRecipeCapabilities", MGDRecipeCapabilities)
+        event.add("MGDPartAbilities", MGDPartAbilities.javaClass)
+        event.add("MGDRecipeCapabilities", MGDRecipeCapabilities.javaClass)
         // todo arsとか
         event.add("IO", IO::class.java)
 

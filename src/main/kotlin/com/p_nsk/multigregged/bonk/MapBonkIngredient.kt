@@ -7,22 +7,17 @@ class MapBonkIngredient(
     val ingredient: BonkIngredient
 ) : AbstractMapIngredient() {
 
-    override fun hash(): Int =
-        ingredient.hashCode()
-
+    override fun hash(): Int = javaClass.hashCode()
+    // ルックアップ時に全て同じ扱いにするため、equalsは型のみで判定する
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is MapBonkIngredient) return false
-        return ingredient == other.ingredient
+        return other is MapBonkIngredient
     }
 
-    override fun toString(): String =
-        "MapBonkIngredient{bonk=$ingredient}"
+    override fun toString(): String = "MapBonkIngredient{bonk=$ingredient}"
 
     companion object {
         fun convertToMapIngredient(
             ingredient: BonkIngredient
-        ): List<AbstractMapIngredient> =
-            listOf(MapBonkIngredient(ingredient))
+        ): List<AbstractMapIngredient> = listOf(MapBonkIngredient(ingredient))
     }
 }

@@ -4,20 +4,14 @@ import com.gregtechceu.gtceu.GTCEu
 import com.gregtechceu.gtceu.api.GTValues
 import com.gregtechceu.gtceu.api.capability.recipe.IO
 import com.gregtechceu.gtceu.api.data.RotationState
-import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity
-import com.gregtechceu.gtceu.api.machine.MachineDefinition
-import com.gregtechceu.gtceu.api.machine.MetaMachine
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties
-import com.gregtechceu.gtceu.api.registry.registrate.MachineBuilder
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels.OVERLAY_ITEM_HATCH_INPUT
 import com.gregtechceu.gtceu.utils.FormattingUtil
 import com.p_nsk.multigregged.MGDMachineUtils.registerTieredMachines
+import com.p_nsk.multigregged.ars.ArsMachines
 import com.p_nsk.multigregged.bonk.BonkHatchPartMachine
 import net.minecraft.network.chat.Component
-import java.util.function.BiFunction
-import com.p_nsk.multigregged.MultiGreggedMod.Companion.REGISTRATE
-import com.p_nsk.multigregged.ars.ArsMachines
 
 @Suppress("unused")
 object MGDMachines {

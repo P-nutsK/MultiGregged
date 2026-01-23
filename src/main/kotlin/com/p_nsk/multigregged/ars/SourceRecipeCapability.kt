@@ -12,37 +12,39 @@ import com.lowdragmc.lowdraglib.utils.LocalizationUtils
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import org.apache.commons.lang3.mutable.MutableInt
 import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
+import com.p_nsk.multigregged.bonk.BonkIngredient
+import com.p_nsk.multigregged.bonk.MapBonkIngredient
 
 
-class SourceRecipeCapability : RecipeCapability<Int>("source", 0xC85CCF, false, 5, SerializerInteger.INSTANCE) {
+class SourceRecipeCapability :
+    RecipeCapability<SourceIngredient>("source", 0xC85CCF, false, 5, SourceIngredient.Companion.Serializer) {
     companion object {
         @JvmField
         val CAP = SourceRecipeCapability()
     }
 
-    override fun copyInner(content: Int): Int {
-        return content
+    override fun copyInner(content: SourceIngredient): SourceIngredient {
+        return content.copy()
     }
 
-    override fun copyWithModifier(content: Int, modifier: ContentModifier): Int {
-        return modifier.apply(content)
+    override fun copyWithModifier(content: SourceIngredient, modifier: ContentModifier): SourceIngredient {
+        return SourceIngredient(modifier.apply(content.source))
     }
-    // こっちでMapSourceIngredientになってくれそう
-    override fun getDefaultMapIngredient(ingredient: Any?): List<AbstractMapIngredient>? {
-        LOGGER.info("Getting default map ingredient for ingredient: $ingredient")
-        if (ingredient !is Int) return null
-        // なぜObjectArrayListを使うのかはわからないけど慣習には従っておけの精神
+
+    override fun getDefaultMapIngredient(ingredient: Any?): List<AbstractMapIngredient> {
         val ingredients = ObjectArrayList<AbstractMapIngredient>(1)
-        ingredients.add(MapSourceIngredient(ingredient))
+        if (ingredient is SourceIngredient) {
+            ingredients.add(MapSourceIngredient(ingredient))
+        }
         return ingredients
     }
 
     override fun compressIngredients(ingredients: Collection<Any?>): List<Any?> {
-        val sourceTotal = ingredients.filterIsInstance<Int>().sum()
+        val sourceTotal = ingredients.filterIsInstance<SourceIngredient>().sumOf { it.source }
         if (sourceTotal <= 0) {
             return emptyList()
         }
-        return ObjectArrayList(listOf(sourceTotal))
+        return ObjectArrayList(listOf(SourceIngredient(sourceTotal)))
     }
 
     override fun isRecipeSearchFilter(): Boolean = true
@@ -56,7 +58,7 @@ class SourceRecipeCapability : RecipeCapability<Int>("source", 0xC85CCF, false, 
         isInput: Boolean,
         yOffset: MutableInt
     ) {
-        val source = contents.sumOf { CAP.of(it.content) }
+        val source = contents.sumOf { CAP.of(it.content).source }
         val io = if (isInput) "in" else "out"
         val tick = if (perTick) ".tick" else ""
         val x = 3 - xOffset
@@ -67,7 +69,6 @@ class SourceRecipeCapability : RecipeCapability<Int>("source", 0xC85CCF, false, 
             )
         )
     }
-
 
 
 }

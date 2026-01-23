@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.recipe.content.Content
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup
+import com.p_nsk.multigregged.ars.SourceRecipeCapability
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.network.chat.Component
 import org.apache.commons.lang3.mutable.MutableInt
@@ -51,18 +52,16 @@ class BonkRecipeCapability :
         isInput: Boolean,
         yOffset: MutableInt
     ) {
-        for (content in contents) {
-            val bonkIngredient = BonkRecipeCapability.CAP.of(content)
-            if (isInput) {
-                group.addWidget(
-                    LabelWidget(
-                        3 - xOffset,
-                        yOffset.addAndGet(10),
-                        Component.translatable("xei.multigregged.bonk_input", bonkIngredient.bonk)
-                    )
+        val bonk = contents.sumOf { CAP.of(it.content).bonk }
+
+        if (isInput) {
+            group.addWidget(
+                LabelWidget(
+                    3 - xOffset,
+                    yOffset.addAndGet(10),
+                    Component.translatable("xei.multigregged.bonk_input", bonk)
                 )
-            }
-            // Bonk output not supported for now
+            )
         }
     }
 

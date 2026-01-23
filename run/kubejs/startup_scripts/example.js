@@ -3,9 +3,6 @@
 // Visit the wiki for more info - https://kubejs.com/
 
 console.info("Hello, World! (Loaded startup scripts)");
-const MGDRecipeCapabilities = Java.loadClass("com.p_nsk.multigregged.MGDRecipeCapabilities");
-const MGDPartAbilities = Java.loadClass("com.p_nsk.multigregged.MGDPartAbilities");
-const IO = Java.loadClass("com.gregtechceu.gtceu.api.capability.recipe.IO");
 
 GTCEuStartupEvents.registry("gtceu:recipe_type", event => {
     event
@@ -20,6 +17,18 @@ GTCEuStartupEvents.registry("gtceu:recipe_type", event => {
         .setMaxIOSize(0, 0, 1, 0)
         .setProgressBar(GuiTextures.PROGRESS_BAR_EXTRACT, FillDirection.LEFT_TO_RIGHT)
         .setSound(GTSoundEntries.CHEMICAL);
+    event
+        .create("bonk_reactor")
+        .setMaxIOSize(1, 1, 0, 0)
+        .setMaxSize(IO.IN, MGDRecipeCapabilities.BONK, 1)
+        .setProgressBar(GuiTextures.PROGRESS_BAR_CRYSTALLIZATION, FillDirection.LEFT_TO_RIGHT)
+        .setSound(GTSoundEntries.CHEMICAL);
+    event
+        .create("source_reactor")
+        .setMaxIOSize(1, 1, 0, 0)
+        .setMaxSize(IO.IN, MGDRecipeCapabilities.SOURCE, 1)
+        .setProgressBar(GuiTextures.PROGRESS_BAR_CRYSTALLIZATION, FillDirection.LEFT_TO_RIGHT)
+        .setSound(GTSoundEntries.CHEMICAL);
 });
 
 GTCEuStartupEvents.registry("gtceu:machine", event => {
@@ -28,7 +37,7 @@ GTCEuStartupEvents.registry("gtceu:machine", event => {
         // WorkableElectricMultiblockMachineの代わりに使うクラス
         .rotationState(RotationState.NON_Y_AXIS)
         // 使用できるレシピ
-        .recipeTypes(["volcanic_sourcelink", "just_voiding_fluid"])
+        .recipeTypes(["volcanic_sourcelink", "just_voiding_fluid", "bonk_reactor", "source_reactor"])
         // 最初に並列を試みてから他の修飾子を適用します
         .recipeModifiers(true, [GTRecipeModifiers.OC_NON_PERFECT, GTRecipeModifiers.BATCH_MODE])
         // 基本はworkableCasingModelの一つ目の引数と同じ
@@ -52,6 +61,8 @@ GTCEuStartupEvents.registry("gtceu:machine", event => {
                             // レシピタイプからI/Oバス/ハッチを許可
                             .or(Predicates.autoAbilities(definition.getRecipeTypes()))
                             .or(Predicates.abilities(MGDPartAbilities.OUTPUT_SOURCE))
+                            .or(Predicates.abilities(MGDPartAbilities.INPUT_BONK))
+                            .or(Predicates.abilities(MGDPartAbilities.INPUT_SOURCE))
                             // メンテナンスハッチ
                             .or(Predicates.abilities(PartAbility.MAINTENANCE).setExactLimit(1)),
                     )

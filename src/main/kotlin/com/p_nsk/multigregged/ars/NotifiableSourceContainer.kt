@@ -10,10 +10,9 @@ import com.gregtechceu.gtceu.api.machine.trait.NotifiableRecipeHandlerTrait
 import com.gregtechceu.gtceu.api.recipe.GTRecipe
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted
-import com.lowdragmc.lowdraglib.syncdata.field.FieldManagedStorage
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder
-import com.lowdragmc.lowdraglib.syncdata.managed.IRef
 import gripe._90.arseng.block.entity.IAdvancedSourceTile
+import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
 import kotlin.math.min
 
 
@@ -27,7 +26,7 @@ class NotifiableSourceContainer @JvmOverloads constructor(
     val io: IO,
     private val capabilityIO: IO = io
 ) :
-    NotifiableRecipeHandlerTrait<Int>(machine),
+    NotifiableRecipeHandlerTrait<SourceIngredient>(machine),
     ICapabilityTrait, IAdvancedSourceTile {
     companion object {
         @JvmField
@@ -38,25 +37,26 @@ class NotifiableSourceContainer @JvmOverloads constructor(
     }
 
     override fun getFieldHolder() = MANAGED_FIELD_HOLDER
-    private val syncStorage = FieldManagedStorage(this)
-    override fun getSyncStorage(): FieldManagedStorage = syncStorage
-
 
     @Persisted
     @DescSynced
-    private var source: Int = 0;
-
-    override fun onSyncChanged(ref: IRef?, isDirty: Boolean) {
-        ref
-        super.onSyncChanged(ref, isDirty)
-    }
-
+    private var source: Int = 0
 
     override fun getHandlerIO(): IO = io
     override fun getCapabilityIO(): IO = capabilityIO
 
     override fun getContents(): List<Any?> {
-        return listOf(source)
+        LOGGER.info(
+            "[SourceTrait] getContents thread={} io={} capIO={} source={}/{} rate={} machine={}",
+            Thread.currentThread().name,
+            io,
+            capabilityIO,
+            source,
+            maxSource,
+            transferLate,
+            machine.javaClass.simpleName
+        )
+        return listOf(SourceIngredient(source))
     }
 
     override fun getTotalContentAmount(): Double {
@@ -66,30 +66,55 @@ class NotifiableSourceContainer @JvmOverloads constructor(
     override fun handleRecipeInner(
         io: IO,
         recipe: GTRecipe,
-        left: MutableList<Int>,
+        left: MutableList<SourceIngredient>,
         simulate: Boolean
-    ): List<Int>? {
-        var remaining: Int = left.sum()
+    ): List<SourceIngredient>? {
+        // ここが呼ばれていれば、少なくともcapability自体はマッチング/実行フェーズに入っている
+        LOGGER.info(
+            "[SourceTrait] handleRecipeInner sim={} io={} recipe={} left={} stored={}/{} rate={} handlerIO={} capIO={}",
+            simulate,
+            io,
+            recipe.id,
+            left.joinToString(prefix = "[", postfix = "]") { it.source.toString() },
+            source,
+            maxSource,
+            transferLate,
+            this.io,
+            capabilityIO
+        )
+
+        var remaining: Int = left.sumOf { it.source }
 
         if (io == IO.IN) {
             val extracted = min(remaining, source)
+            LOGGER.info("[SourceTrait]  IN need={} extracted={} simulate={}", remaining, extracted, simulate)
             if (!simulate) removeSource(extracted)
             remaining -= extracted
         } else if (io == IO.OUT) {
             val inserted = min(remaining, maxSource - source)
+            LOGGER.info("[SourceTrait] OUT need={} inserted={} simulate={}", remaining, inserted, simulate)
             if (!simulate) addSource(inserted)
             remaining -= inserted
+        } else {
+            LOGGER.warn("[SourceTrait] Unknown IO={} (recipe={})", io, recipe.id)
         }
 
-        return if (remaining <= 0) null else listOf(remaining)
+        val result = if (remaining <= 0) null else listOf(SourceIngredient(remaining))
+        LOGGER.info(
+            "[SourceTrait] result remaining={} after stored={}/{} -> {}",
+            remaining,
+            source,
+            maxSource,
+            result?.joinToString(prefix = "[", postfix = "]") { it.source.toString() } ?: "null"
+        )
+        return result
     }
 
 
-    override fun getCapability(): RecipeCapability<Int> = SourceRecipeCapability.CAP
+    override fun getCapability(): RecipeCapability<SourceIngredient> = SourceRecipeCapability.CAP
+    override fun getSize(): Int = 1
 
     override fun getTransferRate(): Int = transferLate
-
-
     override fun getSource(): Int = source
     override fun getMaxSource(): Int = maxSource
 
@@ -98,40 +123,85 @@ class NotifiableSourceContainer @JvmOverloads constructor(
     }
 
     override fun setSource(source: Int): Int {
-        this.source = min(source, maxSource)
+        val before = this.source
+        val after = min(source, maxSource)
+        this.source = after
+        LOGGER.info(
+            "[SourceTrait] setSource thread={} io={} capIO={} before={} requested={} after={} max={} rate={}",
+            Thread.currentThread().name,
+            io,
+            capabilityIO,
+            before,
+            source,
+            after,
+            maxSource,
+            transferLate
+        )
         notifyListeners()
         return this.source
     }
 
     override fun addSource(amount: Int): Int {
+        val before = source
         val inserted = min(amount, maxSource - source)
         source += inserted
+        LOGGER.info(
+            "[SourceTrait] addSource thread={} io={} capIO={} before={} request={} inserted={} after={} max={} canIn={} canOut={}",
+            Thread.currentThread().name,
+            io,
+            capabilityIO,
+            before,
+            amount,
+            inserted,
+            source,
+            maxSource,
+            canCapInput(),
+            canCapOutput()
+        )
         notifyListeners()
-//        return inserted
-        // なぜかこういうAPI
-        return source;
+        return source
     }
 
     override fun removeSource(amount: Int): Int {
+        val before = source
         val extracted = min(amount, source)
         source -= extracted
+        LOGGER.info(
+            "[SourceTrait] removeSource thread={} io={} capIO={} before={} request={} extracted={} after={} max={} canIn={} canOut={}",
+            Thread.currentThread().name,
+            io,
+            capabilityIO,
+            before,
+            amount,
+            extracted,
+            source,
+            maxSource,
+            canCapInput(),
+            canCapOutput()
+        )
         notifyListeners()
-//        return extracted
-        return source;
+        return source
     }
 
     override fun canAcceptSource(): Boolean {
-        if (!io.support(IO.IN)) return false
-        if (source >= maxSource) return false
-
-        return true;
+        val can = canCapInput() && source < maxSource
+        return can
     }
 
     override fun relayCanTakePower(): Boolean {
-        return io.support(IO.OUT)
+        val can = canCapOutput()
+        return can
     }
 
     override fun sourcelinksCanProvidePower(): Boolean {
-        return io.support(IO.IN)
+        val can = canCapInput()
+        return can
+    }
+
+    override fun notifyListeners() {
+        super.notifyListeners()
+        LOGGER.info(
+            "[SourceTrait] notifyListeners",
+        )
     }
 }
