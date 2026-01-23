@@ -30,9 +30,6 @@ open class SourceHatchPartMachine(holder: IMachineBlockEntity, tier: Int, io: IO
     TieredIOPartMachine(holder, tier, io),
     IHasCircuitSlot, IMachineLife, IInteractedMachine, ISourceMachine {
 
-    private val circuitInventory: NotifiableItemStackHandler = createCircuitItemHandler().shouldSearchContent(false)
-    private var circuitSlotEnabled = true
-
     companion object {
         fun getMaxCapacity(initialCapacity: Int, tier: Int): Int {
             return initialCapacity * (1 shl min(9, tier))
@@ -59,18 +56,9 @@ open class SourceHatchPartMachine(holder: IMachineBlockEntity, tier: Int, io: IO
             getMaxConsumption(initialCapacity, tier),
             io
         )
-
-    init {
-        LOGGER.info(
-            "[SourceHatch] init tier={} io={} maxCap={} transferRate={} machine={} pos={}",
-            tier,
-            io,
-            getMaxCapacity(initialCapacity, tier),
-            getMaxConsumption(initialCapacity, tier),
-            this.javaClass.simpleName,
-            holder.pos()
-        )
-    }
+    // SourceContainerの下に置く必要がある handlerIOの決定の問題
+    private val circuitInventory: NotifiableItemStackHandler = createCircuitItemHandler().shouldSearchContent(false)
+    private var circuitSlotEnabled = true
 
     override fun getSourceHandler(): IAdvancedSourceTile = sourceContainer
     ////---------------------------------- Circuit Things ----------------------------------//
