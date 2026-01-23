@@ -14,7 +14,7 @@ class MGDKubeJSPlugin : KubeJSPlugin() {
 
     override fun registerClasses(type: ScriptType, filter: ClassFilter) {
         super.registerClasses(type, filter)
-        filter.allow("com.p_nsk.multigregged");
+        filter.allow("com.p_nsk.multigregged")
     }
 
     override fun registerBindings(event: BindingsEvent) {

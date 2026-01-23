@@ -4,16 +4,12 @@ import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability
 import com.gregtechceu.gtceu.api.recipe.GTRecipe
 import com.gregtechceu.gtceu.api.recipe.content.Content
 import com.gregtechceu.gtceu.api.recipe.content.ContentModifier
-import com.gregtechceu.gtceu.api.recipe.content.SerializerInteger
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup
 import com.lowdragmc.lowdraglib.utils.LocalizationUtils
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import org.apache.commons.lang3.mutable.MutableInt
-import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
-import com.p_nsk.multigregged.bonk.BonkIngredient
-import com.p_nsk.multigregged.bonk.MapBonkIngredient
 
 
 class SourceRecipeCapability :

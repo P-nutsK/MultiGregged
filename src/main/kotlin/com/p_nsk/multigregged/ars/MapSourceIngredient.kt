@@ -2,7 +2,6 @@ package com.p_nsk.multigregged.ars
 
 
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient
-import com.p_nsk.multigregged.bonk.MapBonkIngredient
 
 @Suppress("EqualsOrHashCode")
 class MapSourceIngredient(

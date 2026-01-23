@@ -27,6 +27,7 @@ class NotifiableBonkHandler @JvmOverloads constructor(
         return true
     }
 
+    @Suppress("unused")
     fun drainBonk(bonkToDrain: Int, simulate: Boolean): Boolean {
         if (bonkToDrain < 0) return false
         if (bonkToDrain > this.bonk) return false

@@ -1,3 +1,5 @@
+@file:Suppress("RedundantNullableReturnType")
+
 package com.p_nsk.multigregged.bonk
 
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability
@@ -6,7 +8,6 @@ import com.gregtechceu.gtceu.api.recipe.content.Content
 import com.gregtechceu.gtceu.api.recipe.lookup.ingredient.AbstractMapIngredient
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup
-import com.p_nsk.multigregged.ars.SourceRecipeCapability
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.network.chat.Component
 import org.apache.commons.lang3.mutable.MutableInt
@@ -31,7 +32,7 @@ class BonkRecipeCapability :
     }
 
     override fun compressIngredients(ingredients: Collection<Any?>): List<Any?>? {
-        var bonkTotal = 0;
+        var bonkTotal = 0
         for (ingredient in ingredients) {
             if (ingredient is BonkIngredient) {
                 bonkTotal += ingredient.bonk

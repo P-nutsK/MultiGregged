@@ -2,15 +2,13 @@ package com.p_nsk.multigregged.bonk
 
 import com.gregtechceu.gtceu.api.recipe.content.IContentSerializer
 import com.mojang.serialization.Codec
-import com.mojang.serialization.codecs.RecordCodecBuilder
-import com.p_nsk.multigregged.MultiGreggedMod
 import org.apache.commons.lang3.math.NumberUtils
 
 
 data class BonkIngredient(val bonk: Int) {
     companion object {
         @JvmField
-        val EMPTY = BonkIngredient(0);
+        val EMPTY = BonkIngredient(0)
 
         @JvmField
         val CODEC: Codec<BonkIngredient> = Codec.INT.xmap(

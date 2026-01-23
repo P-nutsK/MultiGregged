@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component
 
 @Suppress("unused")
 object MGDMachines {
-    private const val BONK_INITIAL_CAPACITY = 8;
+    private const val BONK_INITIAL_CAPACITY = 8
     val BONK_INPUT_HATCH = registerTieredMachines(
         "bonk_input_hatch",
         { holder, tier -> BonkHatchPartMachine(holder, tier, IO.IN, BONK_INITIAL_CAPACITY) },

@@ -8,7 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils
 data class SourceIngredient(val source: Int) {
     companion object {
         @JvmField
-        val EMPTY = SourceIngredient(0);
+        val EMPTY = SourceIngredient(0)
 
         @JvmField
         val CODEC: Codec<SourceIngredient> = Codec.INT.xmap(
