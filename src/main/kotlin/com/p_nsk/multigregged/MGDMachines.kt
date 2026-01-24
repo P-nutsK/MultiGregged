@@ -29,7 +29,7 @@ object MGDMachines {
                     null,
                     GTCEu.id("block/overlay/machine/overlay_pipe_in_emissive")
                 )
-                .tooltips(Component.translatable("tooltip.multigregged.bonk_input_hatch"))
+                .tooltips(Component.translatable("multigregged.machine.bonk_hatch.import.tooltip"))
                 .tooltips(
                     Component.translatable(
                         "multigregged.universal.tooltip.bonk_storage_capacity",

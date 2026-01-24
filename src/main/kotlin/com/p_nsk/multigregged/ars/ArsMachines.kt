@@ -9,7 +9,6 @@ import com.gregtechceu.gtceu.api.machine.MachineDefinition
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels
-import com.gregtechceu.gtceu.common.data.models.GTMachineModels.OVERLAY_ITEM_HATCH_INPUT
 import com.gregtechceu.gtceu.utils.FormattingUtil
 import com.p_nsk.multigregged.MGDMachineUtils
 import com.p_nsk.multigregged.MGDPartAbilities
@@ -45,7 +44,7 @@ object ArsMachines {
                         GTCEu.id("block/overlay/machine/$ioOverlay"),
                         null,
                         GTCEu.id("block/overlay/machine/$emissiveOverlay"),
-                    ).tooltips(Component.translatable("tooltip.multigregged.$tooltip")).tooltips(
+                    ).tooltips(Component.translatable("multigregged.machine.$tooltip")).tooltips(
                         Component.translatable(
                             "multigregged.universal.tooltip.source_storage_capacity",
                             FormattingUtil.formatNumbers(SourceHatchPartMachine.getMaxCapacity(1000, tier))

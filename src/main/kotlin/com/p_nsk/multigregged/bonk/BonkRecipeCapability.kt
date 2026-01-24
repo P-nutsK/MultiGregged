@@ -60,7 +60,7 @@ class BonkRecipeCapability :
                 LabelWidget(
                     3 - xOffset,
                     yOffset.addAndGet(10),
-                    Component.translatable("xei.multigregged.bonk_input", bonk)
+                    Component.translatable("multigregged.recipe.bonk.in", bonk)
                 )
             )
         }

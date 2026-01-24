@@ -11,8 +11,8 @@ import com.gregtechceu.gtceu.api.recipe.GTRecipe
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder
-import gripe._90.arseng.block.entity.IAdvancedSourceTile
 import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
+import gripe._90.arseng.block.entity.IAdvancedSourceTile
 import kotlin.math.min
 
 
@@ -116,6 +116,7 @@ class NotifiableSourceContainer @JvmOverloads constructor(
 
     override fun getTransferRate(): Int = transferLate
     override fun getSource(): Int = source
+    fun isEmpty(): Boolean = source <= 0
     override fun getMaxSource(): Int = maxSource
 
     override fun setMaxSource(max: Int) {

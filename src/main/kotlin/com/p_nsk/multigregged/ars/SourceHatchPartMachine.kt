@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO
 import com.gregtechceu.gtceu.api.gui.GuiTextures
 import com.gregtechceu.gtceu.api.gui.fancy.ConfiguratorPanel
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity
+import com.gregtechceu.gtceu.api.machine.TickableSubscription
 import com.gregtechceu.gtceu.api.machine.fancyconfigurator.CircuitFancyConfigurator
 import com.gregtechceu.gtceu.api.machine.feature.IHasCircuitSlot
 import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine
@@ -17,13 +18,21 @@ import com.lowdragmc.lowdraglib.gui.widget.ImageWidget
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget
 import com.lowdragmc.lowdraglib.gui.widget.Widget
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup
+import com.lowdragmc.lowdraglib.syncdata.ISubscription
 import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder
-import gripe._90.arseng.block.entity.IAdvancedSourceTile
-import net.minecraft.world.item.ItemStack
-import kotlin.math.min
 import com.p_nsk.multigregged.MultiGreggedMod.Companion.LOGGER
+import gripe._90.arseng.block.entity.IAdvancedSourceTile
+import gripe._90.arseng.definition.ArsEngCapabilities
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.server.TickTask
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.Block
+import net.minecraftforge.common.util.LazyOptional
+import kotlin.math.min
 
 @Suppress("PROPERTY_HIDES_JAVA_FIELD")
 open class SourceHatchPartMachine(holder: IMachineBlockEntity, tier: Int, io: IO, initialCapacity: Int) :
@@ -56,11 +65,13 @@ open class SourceHatchPartMachine(holder: IMachineBlockEntity, tier: Int, io: IO
             getMaxConsumption(initialCapacity, tier),
             io
         )
+
     // SourceContainerの下に置く必要がある handlerIOの決定の問題
     private val circuitInventory: NotifiableItemStackHandler = createCircuitItemHandler().shouldSearchContent(false)
     private var circuitSlotEnabled = true
 
     override fun getSourceHandler(): IAdvancedSourceTile = sourceContainer
+
     ////---------------------------------- Circuit Things ----------------------------------//
     override fun getCircuitInventory(): NotifiableItemStackHandler = circuitInventory
 
@@ -155,27 +166,128 @@ open class SourceHatchPartMachine(holder: IMachineBlockEntity, tier: Int, io: IO
         group.setBackground(GuiTextures.BACKGROUND_INVERSE)
         return group
     }
-    // shift 右クリックでしか動かないからいらないやこれ
-//    // Dominion WandがインタラクションしたときはGUIを開かないようにSUCCESSを返す
-//    // GUIを無くすという選択肢もある。要検討
-//    override fun onUse(
-//        state: BlockState,
-//        world: Level,
-//        pos: BlockPos,
-//        player: Player,
-//        hand: InteractionHand,
-//        hit: BlockHitResult
-//    ): InteractionResult {
-//
-//        val heldItem = player.getItemInHand(hand)
-//        if (heldItem.item is DominionWand) {
-//            return InteractionResult.SUCCESS
-//        }
-//
-//        return InteractionResult.PASS
-//    }
+
+    // TODO: 前のブロックとの自動IOの実装
+    // TODO: GUIの改善 スロットを追加してソースジャーとIOできるとか？ ちょっとずるいのでConfig化かも
+    // TODO: 色をつけられるようにするやつ。いらない気もするけど今は中途半端だから
+    // Modular Machineryみたいに可愛いやつがいい
+    ///---------------------------------- Auto IO Things ----------------------------------//
+    private var autoIOSub: TickableSubscription? = null
+    override fun onNeighborChanged(block: Block, fromPos: BlockPos, isMoving: Boolean) {
+        super.onNeighborChanged(block, fromPos, isMoving)
+        updateSubscription()
+    }
+
+    override fun setWorkingEnabled(workingEnabled: Boolean) {
+        super.setWorkingEnabled(workingEnabled)
+        updateSubscription()
+    }
+
+    // TODO Onrotated
+
+    fun updateSubscription(newFacing: Direction = frontFacing) {
+        if (workingEnabled) {
+            val canOutput = io.support(IO.OUT) && !sourceContainer.isEmpty()
+            val canInput = io.support(IO.IN)
+            val canIO = canOutput || canInput
+            if (canIO && hasAdjacentSourceContainer()) {
+                autoIOSub = subscribeServerTick(autoIOSub, ::autoIO)
+            }
+        } else {
+            autoIOSub?.unsubscribe().also {
+                autoIOSub = null
+            }
+        }
+    }
+
+    private fun autoIO() {
+        if (offsetTimer % 5 != 0L) return
+        if (workingEnabled) {
+            if (io.support(IO.IN)) {
+                inputFromAdjacent()
+            }
+            if (io.support(IO.OUT)) {
+                outputToAdjacent()
+            }
+        }
+        updateSubscription()
+    }
+
+    // ArsのAPIはextracted/insertedを返す代わりにcurrentSourceを返すので注意
+    private fun outputToAdjacent() {
+        val adjacent = getAdjacentSourceContainer() ?: return
+        if (!adjacent.canAcceptSource()) return
+
+        val transfer = negotiateTransfer(
+            senderSource = sourceContainer.source,
+            senderRate = sourceContainer.transferRate,
+            receiverSource = adjacent.source,
+            receiverMax = adjacent.maxSource
+        )
+        if (transfer <= 0) return
+
+        adjacent.addSource(transfer)
+        sourceContainer.removeSource(transfer)
+    }
+
+    private fun inputFromAdjacent() {
+        val adjacent = getAdjacentSourceContainer() ?: return
+        if (!adjacent.relayCanTakePower()) return
+
+        val transfer = negotiateTransfer(
+            senderSource = adjacent.source,
+            senderRate = adjacent.transferRate,
+            receiverSource = sourceContainer.source,
+            receiverMax = sourceContainer.maxSource
+        )
+        if (transfer <= 0) return
+
+        sourceContainer.addSource(transfer)
+        adjacent.removeSource(transfer)
+    }
+
+    private fun negotiateTransfer(
+        senderSource: Int,
+        senderRate: Int,
+        receiverSource: Int,
+        receiverMax: Int
+    ): Int {
+        val canSend = min(senderRate, senderSource)
+        if (canSend <= 0) return 0
+
+        val canReceive = receiverMax - receiverSource
+        if (canReceive <= 0) return 0
+
+        return min(canSend, canReceive)
+    }
 
 
-// NOTE: このプロジェクトでは LOGGER.debug が表示されない運用のため、調査ログは基本 INFO を使用する。
+    private fun getAdjacentSourceCapability(): LazyOptional<IAdvancedSourceTile> {
+        val neighborPos = holder.pos().relative(frontFacing)
+        val neighborBE = holder.level().getBlockEntity(neighborPos) ?: return LazyOptional.empty()
+        return neighborBE.getCapability(ArsEngCapabilities.SOURCE_TILE, frontFacing.opposite)
+    }
+
+    private fun getAdjacentSourceContainer(): IAdvancedSourceTile? {
+        return getAdjacentSourceCapability().orElse(null)
+    }
+
+    private fun hasAdjacentSourceContainer(): Boolean {
+        return getAdjacentSourceCapability().isPresent
+    }
+
+    var containerSub: ISubscription? = null
+    override fun onLoad() {
+        super.onLoad()
+        if (level is ServerLevel) {
+            (level as ServerLevel).server.tell(TickTask(0, ::updateSubscription))
+        }
+        containerSub = sourceContainer.addChangedListener(::updateSubscription)
+    }
+
+    override fun onUnload() {
+        super.onUnload()
+        containerSub?.unsubscribe().also { containerSub = null }
+    }
 
 }
