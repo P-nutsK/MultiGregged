@@ -8,10 +8,10 @@ import com.gregtechceu.gtceu.api.data.RotationState
 import com.gregtechceu.gtceu.api.machine.MachineDefinition
 import com.gregtechceu.gtceu.api.machine.property.GTMachineModelProperties
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils
-import com.gregtechceu.gtceu.common.data.models.GTMachineModels
 import com.gregtechceu.gtceu.utils.FormattingUtil
 import com.p_nsk.multigregged.MGDMachineUtils
 import com.p_nsk.multigregged.MGDPartAbilities
+import com.p_nsk.multigregged.MultiGreggedMod
 import net.minecraft.network.chat.Component
 
 object ArsMachines {
@@ -26,7 +26,7 @@ object ArsMachines {
 
     fun registerSourceHatch(name: String, displayName: String, io: IO): Array<MachineDefinition> {
         val ioOverlay =
-            if (io == IO.OUT) GTMachineModels.OVERLAY_FLUID_HATCH_OUTPUT else GTMachineModels.OVERLAY_FLUID_HATCH_INPUT
+            if (io == IO.OUT) "overlay_source_hatch_output" else "overlay_source_hatch_input"
         val emissiveOverlay = if (io == IO.OUT) "overlay_pipe_out_emissive" else "overlay_pipe_in_emissive"
         val tooltip = if (io == IO.OUT) "source_hatch.export" else "source_hatch.import"
         val ability = if (io == IO.OUT) MGDPartAbilities.OUTPUT_SOURCE else MGDPartAbilities.INPUT_SOURCE
@@ -41,10 +41,10 @@ object ArsMachines {
                     .rotationState(RotationState.ALL)
                     .modelProperty(GTMachineModelProperties.IS_FORMED, false)
                     .colorOverlayTieredHullModel(
-                        GTCEu.id("block/overlay/machine/$ioOverlay"),
+                        MultiGreggedMod.id("block/overlay/machine/$ioOverlay"),
                         null,
                         GTCEu.id("block/overlay/machine/$emissiveOverlay"),
-                    ).tooltips(Component.translatable("multigregged.machine.$tooltip")).tooltips(
+                    ).tooltips(Component.translatable("multigregged.machine.$tooltip.tooltip")).tooltips(
                         Component.translatable(
                             "multigregged.universal.tooltip.source_storage_capacity",
                             FormattingUtil.formatNumbers(SourceHatchPartMachine.getMaxCapacity(1000, tier))

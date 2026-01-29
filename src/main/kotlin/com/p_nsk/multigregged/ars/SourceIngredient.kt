@@ -1,5 +1,6 @@
 package com.p_nsk.multigregged.ars
 
+import com.gregtechceu.gtceu.api.recipe.content.ContentModifier
 import com.gregtechceu.gtceu.api.recipe.content.IContentSerializer
 import com.mojang.serialization.Codec
 import org.apache.commons.lang3.math.NumberUtils
@@ -41,6 +42,9 @@ data class SourceIngredient(val source: Int) {
 
     fun copy(): SourceIngredient {
         return SourceIngredient(source)
+    }
+    fun copyWithModifier(modifier:ContentModifier): SourceIngredient {
+        return SourceIngredient(modifier.apply(source))
     }
 
 }

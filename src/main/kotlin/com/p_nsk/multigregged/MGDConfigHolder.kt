@@ -39,7 +39,7 @@ class ConfigHolder {
 
         fun init() {
             synchronized(LOCK) {
-                if (INSTANCE == null) {
+                if (!::INSTANCE.isInitialized) {
                     INSTANCE =
                         Configuration.registerConfig(ConfigHolder::class.java, ConfigFormats.yaml())
                             .getConfigInstance()

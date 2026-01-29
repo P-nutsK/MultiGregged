@@ -24,7 +24,7 @@ class SourceRecipeCapability :
     }
 
     override fun copyWithModifier(content: SourceIngredient, modifier: ContentModifier): SourceIngredient {
-        return SourceIngredient(modifier.apply(content.source))
+        return content.copyWithModifier(modifier)
     }
 
     override fun getDefaultMapIngredient(ingredient: Any?): List<AbstractMapIngredient> {

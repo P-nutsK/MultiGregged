@@ -25,6 +25,7 @@ object LangHandler {
         provider.add("multigregged.machine.source_hatch.export.tooltip", "Source Output for Multiblocks")
         provider.add("multigregged.universal.tooltip.bonk_storage_capacity", "§9Bonk Capacity: §f%d Bonk")
         provider.add("multigregged.universal.tooltip.source_storage_capacity", "§9Source Capacity: §f%d Source")
+        provider.add("multigregged.source.amount", "§9Amount: %d/%d")
 
     }
 

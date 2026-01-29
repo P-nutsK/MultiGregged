@@ -9,7 +9,7 @@ class MapSourceIngredient(
 ) : AbstractMapIngredient() {
 
     override fun hash(): Int = javaClass.hashCode()
-    // ルックアップ時に全て同じ扱いにするため、equalsは型のみで判定する
+    // ルックアップ時にsourceの完全一致テストをするのは望みではないため、equalsは型のみで判定する
     override fun equals(other: Any?): Boolean {
         return other is MapSourceIngredient
     }

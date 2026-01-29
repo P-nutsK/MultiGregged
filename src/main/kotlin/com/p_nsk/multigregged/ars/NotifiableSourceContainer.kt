@@ -16,7 +16,7 @@ import gripe._90.arseng.block.entity.IAdvancedSourceTile
 import kotlin.math.min
 
 
-class NotifiableSourceContainer @JvmOverloads constructor(
+open class NotifiableSourceContainer @JvmOverloads constructor(
     machine: MetaMachine,
     @Persisted
     @DescSynced
