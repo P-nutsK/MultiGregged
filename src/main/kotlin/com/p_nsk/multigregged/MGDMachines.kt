@@ -42,8 +42,8 @@ object MGDMachines {
 
 
     fun init() {
-        // Ars IntegrationはArsEngが有効な場合にのみ
-        if(GTCEu.isModLoaded("arseng")) {
+
+        if(MGDConfigHolder.INSTANCE.features.sourceHatchAvailable()) {
             ArsMachines.init()
         }
     }

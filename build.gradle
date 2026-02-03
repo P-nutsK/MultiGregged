@@ -83,6 +83,7 @@ repositories {
         content {
             includeGroup("appeng")
             includeGroup("mekanism")
+            includeGroup("vazkii")
         }
     }
     // geckolib
@@ -220,6 +221,8 @@ dependencies {
     modImplementation("curse.maven:ars-energistique-905641:5504444")
     // applied energistics 2
     modImplementation("appeng:appliedenergistics2-forge:${ae2_version}")
+
+    modImplementation("vazkii.botania:Botania:${minecraft_version}-${botania_version}-FORGE")
 
     // lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'

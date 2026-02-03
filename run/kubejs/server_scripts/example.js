@@ -17,16 +17,13 @@ ServerEvents.recipes(event => {
         .output(MGDRecipeCapabilities.SOURCE, 2000)
         .duration(100);
 
-    event.recipes.gtceu.just_voiding_fluid("lava").inputFluids("minecraft:lava 1000").duration(100);
-
-    event.recipes.gtceu.just_voiding_fluid("blaze").inputFluids("gtceu:blaze 200").duration(100);
-
     event.recipes.gtceu
-        .bonk_reactor("blaze")
+        .bonk_reactor("blaze_powder")
         .itemInputs("minecraft:blaze_rod")
         .itemOutputs("10x minecraft:blaze_powder")
         .input(MGDRecipeCapabilities.BONK, 8)
         .duration(100);
+
     event.recipes.gtceu
         .source_reactor("berry")
         .itemInputs("minecraft:sweet_berries")

@@ -7,7 +7,7 @@ import dev.toma.configuration.config.Configurable
 import dev.toma.configuration.config.format.ConfigFormats
 
 @Config(id = MultiGreggedMod.MOD_ID)
-class ConfigHolder {
+class MGDConfigHolder {
     @Configurable
     var features = FeatureConfig()
 
@@ -19,7 +19,7 @@ class ConfigHolder {
             "Default: true"
         )
         var sourceHatch: Boolean = true // default false
-        fun sourceHatchEnabled(): Boolean {
+        fun sourceHatchAvailable(): Boolean {
             return sourceHatch && GTCEu.isModLoaded("ars_nouveau") &&
                     GTCEu.isModLoaded("arseng")
         }
@@ -34,14 +34,14 @@ class ConfigHolder {
     }
 
     companion object {
-        lateinit var INSTANCE: ConfigHolder
+        lateinit var INSTANCE: MGDConfigHolder
         private val LOCK = Any()
 
         fun init() {
             synchronized(LOCK) {
                 if (!::INSTANCE.isInitialized) {
                     INSTANCE =
-                        Configuration.registerConfig(ConfigHolder::class.java, ConfigFormats.yaml())
+                        Configuration.registerConfig(MGDConfigHolder::class.java, ConfigFormats.yaml())
                             .getConfigInstance()
                 }
             }
