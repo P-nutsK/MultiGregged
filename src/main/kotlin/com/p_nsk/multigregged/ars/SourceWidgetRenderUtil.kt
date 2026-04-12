@@ -29,7 +29,7 @@ object SourceWidgetRenderUtil {
         val yStart = y + height
 
         RenderSystem.enableBlend()
-        RenderSystem.setShaderTexture(0,  InventoryMenu.BLOCK_ATLAS);
+        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS)
 
         for (xTile in 0..xTileCount) {
             for (yTile in 0..yTileCount) {

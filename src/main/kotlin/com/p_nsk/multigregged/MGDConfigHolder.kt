@@ -18,7 +18,7 @@ class MGDConfigHolder {
             "Ars Énergistique is required.",
             "Default: true"
         )
-        var sourceHatch: Boolean = true // default false
+        var sourceHatch: Boolean = true
         fun sourceHatchAvailable(): Boolean {
             return sourceHatch && GTCEu.isModLoaded("ars_nouveau") &&
                     GTCEu.isModLoaded("arseng")
@@ -29,7 +29,7 @@ class MGDConfigHolder {
             "Whether to generate Bonk hatches that hold the number of times a hatch was right-clicked with a hammer.",
             "Default: true"
         )
-        var bonkHatch: Boolean = true // default true
+        var bonkHatch: Boolean = true
 
     }
 

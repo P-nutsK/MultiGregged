@@ -26,12 +26,12 @@ class BonkHatchPartMachine(holder: IMachineBlockEntity, tier: Int, io: IO,initia
         gridSide: Direction,
         hitResult: BlockHitResult
     ): InteractionResult {
-        if (isRemote) return InteractionResult.SUCCESS;
+        if (isRemote) return InteractionResult.SUCCESS
         if (bonkHandler.addBonk(1, false)) {
-            playerIn.sendSystemMessage(Component.literal("Bonk! Total bonk stored: " + bonkHandler.bonk));
-            return InteractionResult.CONSUME;
+            playerIn.sendSystemMessage(Component.literal("Bonk! Total bonk stored: " + bonkHandler.bonk))
+            return InteractionResult.CONSUME
         }
-        return super.onHardHammerClick(playerIn, hand, gridSide, hitResult);
+        return super.onHardHammerClick(playerIn, hand, gridSide, hitResult)
     }
 
 }

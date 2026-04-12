@@ -49,7 +49,7 @@ class SourceMachineBlockEntity(type: BlockEntityType<*>, pos: BlockPos, blockSta
     }
 
     override fun invalidateCaps() {
-        LOGGER.info("[SourceBE] invalidateCaps pos={} metaMachine={}", blockPos, metaMachine?.javaClass?.name)
+        LOGGER.debug("[SourceBE] invalidateCaps pos={} metaMachine={}", blockPos, metaMachine?.javaClass?.name)
         super.invalidateCaps()
         sourceCap.invalidate()
     }

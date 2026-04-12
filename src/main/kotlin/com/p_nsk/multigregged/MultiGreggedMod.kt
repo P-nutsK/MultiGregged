@@ -72,7 +72,7 @@ class MultiGreggedMod {
         // If we want to use annotations to register event listeners,
         // we need to register our object like this!
         MinecraftForge.EVENT_BUS.register(this)
-        ConfigHolder.init()
+        MGDConfigHolder.init()
 
         REGISTRATE.registerRegistrate()
 
