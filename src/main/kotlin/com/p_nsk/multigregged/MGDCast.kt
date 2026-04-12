@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack
 
 object MGDCast {
     @JvmStatic
-    fun bonk(bonk: BonkIngredient): BonkIngredient = bonk;
+    fun bonk(bonk: BonkIngredient): BonkIngredient = bonk
     @JvmStatic
-    fun item(item: ItemStack) : ItemStack = item;
+    fun item(item: ItemStack) : ItemStack = item
 }

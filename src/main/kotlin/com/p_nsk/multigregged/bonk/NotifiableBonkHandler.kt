@@ -43,7 +43,7 @@ class NotifiableBonkHandler @JvmOverloads constructor(
         left: MutableList<BonkIngredient>,
         simulate: Boolean
     ): List<BonkIngredient>? {
-        LOGGER.info(
+        LOGGER.debug(
             "[BonkTrait] handleRecipeInner thread={} sim={} io={} recipe={} left={} stored={} capIO={} handlerIO={}",
             Thread.currentThread().name,
             simulate,
@@ -68,7 +68,7 @@ class NotifiableBonkHandler @JvmOverloads constructor(
     }
 
     override fun getContents(): List<Any?> {
-        LOGGER.info(
+        LOGGER.debug(
             "[BonkTrait] getContents thread={} io={} capIO={} stored={} machine={}",
             Thread.currentThread().name,
             handlerIO,

@@ -22,7 +22,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
     @DescSynced
     private var maxSource: Int,
     @Persisted
-    private val transferLate: Int,
+    private val transferRate: Int,
     val io: IO,
     private val capabilityIO: IO = io
 ) :
@@ -46,14 +46,14 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
     override fun getCapabilityIO(): IO = capabilityIO
 
     override fun getContents(): List<Any?> {
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] getContents thread={} io={} capIO={} source={}/{} rate={} machine={}",
             Thread.currentThread().name,
             io,
             capabilityIO,
             source,
             maxSource,
-            transferLate,
+            transferRate,
             machine.javaClass.simpleName
         )
         return listOf(SourceIngredient(source))
@@ -70,7 +70,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
         simulate: Boolean
     ): List<SourceIngredient>? {
         // ここが呼ばれていれば、少なくともcapability自体はマッチング/実行フェーズに入っている
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] handleRecipeInner sim={} io={} recipe={} left={} stored={}/{} rate={} handlerIO={} capIO={}",
             simulate,
             io,
@@ -78,7 +78,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
             left.joinToString(prefix = "[", postfix = "]") { it.source.toString() },
             source,
             maxSource,
-            transferLate,
+            transferRate,
             this.io,
             capabilityIO
         )
@@ -87,12 +87,12 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
 
         if (io == IO.IN) {
             val extracted = min(remaining, source)
-            LOGGER.info("[SourceTrait]  IN need={} extracted={} simulate={}", remaining, extracted, simulate)
+            LOGGER.debug("[SourceTrait]  IN need={} extracted={} simulate={}", remaining, extracted, simulate)
             if (!simulate) removeSource(extracted)
             remaining -= extracted
         } else if (io == IO.OUT) {
             val inserted = min(remaining, maxSource - source)
-            LOGGER.info("[SourceTrait] OUT need={} inserted={} simulate={}", remaining, inserted, simulate)
+            LOGGER.debug("[SourceTrait] OUT need={} inserted={} simulate={}", remaining, inserted, simulate)
             if (!simulate) addSource(inserted)
             remaining -= inserted
         } else {
@@ -100,7 +100,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
         }
 
         val result = if (remaining <= 0) null else listOf(SourceIngredient(remaining))
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] result remaining={} after stored={}/{} -> {}",
             remaining,
             source,
@@ -114,7 +114,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
     override fun getCapability(): RecipeCapability<SourceIngredient> = SourceRecipeCapability.CAP
     override fun getSize(): Int = 1
 
-    override fun getTransferRate(): Int = transferLate
+    override fun getTransferRate(): Int = transferRate
     override fun getSource(): Int = source
     fun isEmpty(): Boolean = source <= 0
     override fun getMaxSource(): Int = maxSource
@@ -127,7 +127,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
         val before = this.source
         val after = min(source, maxSource)
         this.source = after
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] setSource thread={} io={} capIO={} before={} requested={} after={} max={} rate={}",
             Thread.currentThread().name,
             io,
@@ -136,7 +136,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
             source,
             after,
             maxSource,
-            transferLate
+            transferRate
         )
         notifyListeners()
         return this.source
@@ -146,7 +146,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
         val before = source
         val inserted = min(amount, maxSource - source)
         source += inserted
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] addSource thread={} io={} capIO={} before={} request={} inserted={} after={} max={} canIn={} canOut={}",
             Thread.currentThread().name,
             io,
@@ -167,7 +167,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
         val before = source
         val extracted = min(amount, source)
         source -= extracted
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] removeSource thread={} io={} capIO={} before={} request={} extracted={} after={} max={} canIn={} canOut={}",
             Thread.currentThread().name,
             io,
@@ -201,7 +201,7 @@ open class NotifiableSourceContainer @JvmOverloads constructor(
 
     override fun notifyListeners() {
         super.notifyListeners()
-        LOGGER.info(
+        LOGGER.debug(
             "[SourceTrait] notifyListeners",
         )
     }

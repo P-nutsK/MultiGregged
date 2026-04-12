@@ -47,7 +47,7 @@ object ArsMachines {
                     ).tooltips(Component.translatable("multigregged.machine.$tooltip.tooltip")).tooltips(
                         Component.translatable(
                             "multigregged.universal.tooltip.source_storage_capacity",
-                            FormattingUtil.formatNumbers(SourceHatchPartMachine.getMaxCapacity(1000, tier))
+                            FormattingUtil.formatNumbers(SourceHatchPartMachine.getMaxCapacity(INITIAL_SOURCE_CAPACITY, tier))
                         )
                     ).register()
             }, ::SourceMachineBlockEntity, *GTMachineUtils.ALL_TIERS
